@@ -18,6 +18,16 @@ int main(int argc, char* argv[]){
     ifstream propFile;
     propFile.open(prop);
 
+    //creating the chainCode file
+    string chainCodeString = label + "_chainCode.txt";
+    ofstream chainFile;
+    chainFile.open(chainCodeString);
+
+    //creating the boundary file
+    string boundaryString = label + "_Boundary.txt";
+    ofstream boundaryFile;
+    boundaryFile.open(boundaryString);
+
     //get the numRows, numCols, minVal and maxVal from labelFile
     int *labelHeader = new int[4]();
 
@@ -57,7 +67,6 @@ int main(int argc, char* argv[]){
             iss1.clear();
             iss1.str(line1);
 
-
             while (iss1 >> number1){
                 propHeader[j] = number1;
                 j++;
@@ -81,6 +90,9 @@ int main(int argc, char* argv[]){
 
     ChainCode ChainCodeObject(labelHeader[0], labelHeader[1], labelHeader[2], labelHeader[3], propHeader[0], propHeader[1], propHeader[2], propHeader[3], propHeader[4], propHeader[5], propHeader[6], imageArray, CCArray, boundaryArray);
 
+    chainFile << labelHeader[0] << " " << labelHeader[1] << " " << labelHeader[2] << " " << labelHeader[3] << endl;
+    chainFile << propHeader[0] << endl;
+
     //load image file into the imageArray
     ChainCodeObject.loadImage(labelFile);
     ChainCodeObject.clearCCAry();
@@ -88,7 +100,7 @@ int main(int argc, char* argv[]){
 
     ChainCodeObject.getChainCode();
 
-    ChainCodeObject.print();
+    // ChainCodeObject.print();
 
 
 

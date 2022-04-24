@@ -46,7 +46,7 @@ class ChainCode{
         Point *coordOffset = new Point[8];
         Point *neighborCoord = new Point[8];
 
-        int *zeroTable = new int[6,0,0,2,2,4,4,6];
+        int *zeroTable = new int[8];
 
 
 

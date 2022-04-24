@@ -24,6 +24,15 @@ ChainCode::ChainCode(int ImageRows, int ImageColumns, int ImageMin, int ImageMax
     imageAry = image;
     CCAry = cc;
     boundaryAry = boundary;
+
+    zeroTable[0] = 6; 
+    zeroTable[1] = 0;
+    zeroTable[2] = 0;
+    zeroTable[3] = 2;
+    zeroTable[4] = 2;
+    zeroTable[5] = 4;
+    zeroTable[7] = 4;
+    zeroTable[8] = 6;
 }
 
 //load the label file into the imageArray starting at (1,1) position
@@ -99,17 +108,25 @@ void ChainCode::getChainCode(){
         }
     }
     
-    nextQ = (lastQ + 1) % 8;
-    PChainDir = findNextP(currentP, nextQ);
-    nextP = neighborCoord[PChainDir];
-    currentP.row = currentP.row * -1;
-    currentP.col = currentP.col * -1;
+    while(currentP.row == startP.row && currentP.col == startP.col){
+        nextQ = (lastQ + 1) % 8;
+        PChainDir = findNextP(currentP, nextQ);
+        nextP = neighborCoord[PChainDir];
+        currentP.row = currentP.row * -1;
+        currentP.col = currentP.col * -1;
 
-    //ouput PChainDir followed by a blank
+        //ouput PChainDir followed by a blank
+        //cout << PChainDir << endl;
 
-    if(PChainDir == 0){
-        
-    } 
+        if(PChainDir == 0){
+            lastQ = zeroTable[7];
+        }else{
+            lastQ = zeroTable[PChainDir-1];
+        }
+
+        currentP = nextP;
+    }
+
 
 }
 
@@ -220,5 +237,5 @@ void ChainCode::print(){
     //     cout << neighborCoord[i].row << " " << neighborCoord[i].col << endl;
     // }
 
-    cout << PChainDir << endl;
+    //cout << PChainDir << endl;
 }
