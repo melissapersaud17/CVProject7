@@ -6,7 +6,7 @@
 using namespace std;
 
 //constructor
-ChainCode::ChainCode(int ImageRows, int ImageColumns, int ImageMin, int ImageMax, int numOfCC, int label, int pixels, int minR, int minC, int maxR, int maxC, int **image, int **cc, int** boundary){
+ChainCode::ChainCode(int ImageRows, int ImageColumns, int ImageMin, int ImageMax, int numOfCC, int **image, int **cc, int** boundary){
     numRows = ImageRows;
     numCols = ImageColumns;
     minVal = ImageMin;
@@ -14,12 +14,12 @@ ChainCode::ChainCode(int ImageRows, int ImageColumns, int ImageMin, int ImageMax
 
     numCC = numOfCC;
 
-    CC.label = label;
-    CC.numPixels = pixels;
-    CC.minRow = minR;
-    CC.minCol = minC;
-    CC.maxRow = maxR;
-    CC.maxCol = maxC;
+    // CC.label = label;
+    // CC.numPixels = pixels;
+    // CC.minRow = minR;
+    // CC.minCol = minC;
+    // CC.maxRow = maxR;
+    // CC.maxCol = maxC;
 
     imageAry = image;
     CCAry = cc;
@@ -85,7 +85,7 @@ void ChainCode::loadCCAry(){
 
 } 
 
-void ChainCode::getChainCode(){
+void ChainCode::getChainCode(ofstream& ChainCodeFile){
 
     int label = CC.label;
     bool foundFirst = false;
@@ -108,15 +108,18 @@ void ChainCode::getChainCode(){
         }
     }
     
-    while(currentP.row == startP.row && currentP.col == startP.col){
+    while((currentP.row != startP.row && currentP.row != currentP.col) || foundFirst){
         nextQ = (lastQ + 1) % 8;
         PChainDir = findNextP(currentP, nextQ);
-        nextP = neighborCoord[PChainDir];
-        currentP.row = currentP.row * -1;
-        currentP.col = currentP.col * -1;
+        nextP.row = neighborCoord[PChainDir].row;
+        nextP.col = neighborCoord[PChainDir].col;
 
-        //ouput PChainDir followed by a blank
-        //cout << PChainDir << endl;
+        // currentP.row = currentP.row * -1;
+        // currentP.col = currentP.col * -1;
+
+        CCAry[currentP.row][currentP.col] = CCAry[currentP.row][currentP.col] * -1;
+
+        ChainCodeFile << PChainDir << " ";
 
         if(PChainDir == 0){
             lastQ = zeroTable[7];
@@ -124,33 +127,48 @@ void ChainCode::getChainCode(){
             lastQ = zeroTable[PChainDir-1];
         }
 
-        currentP = nextP;
+        currentP.row = nextP.row;
+        currentP.col = nextP.col;
+
+        foundFirst = false;
     }
 
 
 }
 
 int ChainCode::findNextP(Point currP, int lastQ){
+
+    cout << "inside find nextP" << endl;
+
     loadNeighBors(currentP);
     
     int index = lastQ;
     bool found = false;
 
-    int chainDir;
+    int chainDir = 0;
     
-    int iRow;
-    int jCol;
+    int iRow = neighborCoord[index].row;
+    int jCol = neighborCoord[index].col;
 
-    while(found != true){
-        iRow = neighborCoord[index].row;
-        jCol = neighborCoord[index].col;
+    // cout << "index " << index << endl;
+    // cout << "iRow " << iRow << endl;
+    // cout << "jCol " << jCol << endl;
+    // while(iRow < numRows + 2){
+    //     while(jCol < numCols + 2){
+            while(found != true){
+                iRow = neighborCoord[index].row;
+                jCol = neighborCoord[index].col;
 
-        if(imageAry[iRow][jCol] == CC.label){
-            chainDir = index;
-            found = true;
-        }
-        index = (index + 1) % 8;
-    }
+                if(imageAry[iRow][jCol] == CC.label){
+                    chainDir = index;
+                    found = true;
+                }
+                index = (index + 1) % 8;
+            }
+    //     }
+    // }
+
+    
     
     return chainDir;
 } 
@@ -219,6 +237,15 @@ void ChainCode::loadNeighBors(Point current){
 
 }
 
+void ChainCode::setCCProperty(int label, int numPixels, int minRow, int minCol, int maxRow, int maxCol){
+    CC.label = label;
+    CC.numPixels = numPixels;
+    CC.minRow = minRow;
+    CC.minCol = minCol;
+    CC.maxRow = maxRow;
+    CC.maxCol = maxCol;
+}
+
 
 void ChainCode::print(){
 
@@ -232,10 +259,25 @@ void ChainCode::print(){
     // cout << "current p " << endl;
     // cout << currentP.row << " " << currentP.col << endl;
 
-    // cout << "neighbors array " << endl;
-    // for(int i = 0; i < 8; i++){
-    //     cout << neighborCoord[i].row << " " << neighborCoord[i].col << endl;
-    // }
+    cout << "neighbors array " << endl;
+    for(int i = 0; i < 8; i++){
+        cout << neighborCoord[i].row << " " << neighborCoord[i].col << endl;
+    }
 
-    //cout << PChainDir << endl;
+    // //cout << PChainDir << endl;
+
+    // cout << "numRows " << numRows << endl;
+    // cout << "numCols " << numCols << endl;
+    // cout << "minVal " << minVal << endl;
+    // cout << "maxVal " << maxVal << endl;
+
+    // cout << "CC # " << numCC << endl;
+    // cout << "label " << CC.label << endl;
+    // cout << "numPixels " << CC.numPixels << endl;
+    // cout << "minRow " << CC.minRow << endl;
+    // cout << "minCol " << CC.minCol << endl;
+    // cout << "maxRow " << CC.maxRow << endl;
+    // cout << "maxCol " << CC.maxCol << endl;
+    
+    
 }

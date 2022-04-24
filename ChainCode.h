@@ -52,17 +52,19 @@ class ChainCode{
 
 
     public:
-        ChainCode(int ImageRows, int ImageColumns, int ImageMin, int ImageMax, int numOfCC, int label, int pixels, int minR, int minC, int maxR, int maxC, int **image, int **cc, int** boundary);
+        ChainCode(int ImageRows, int ImageColumns, int ImageMin, int ImageMax, int numOfCC, int **image, int **cc, int** boundary);
         void loadImage(ifstream& labelFile);
         void clearCCAry();
 
         void loadCCAry();
 
-        void getChainCode();
+        void getChainCode(ofstream& ChainCodeFile);
         
         int findNextP(Point currP, int lastQ);
 
         void loadNeighBors(Point current);
+
+        void setCCProperty(int label, int numPixels, int minRow, int minCol, int maxRow, int maxCol);
         
         void print();
 
